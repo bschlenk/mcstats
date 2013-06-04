@@ -4,12 +4,7 @@ import re
 import sys
 import os
 
-def get_players():
-	player_files = os.listdir('world/players')
-	players = []
-	for x in player_files:
-		players.append(os.path.splitext(x)[0])
-	return players
+from util import get_players
 
 players = get_players()
 

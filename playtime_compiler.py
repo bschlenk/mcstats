@@ -4,27 +4,17 @@ import time
 import os
 import re
 
-def filter_warnings():
-	with open("server.log", 'r') as f_in:
-		with open("server_filtered.log", 'w') as f_out:
-			for line in f_in:
-				if not "[WARNING]" in line:
-					f_out.write(line)
-
-def get_players():
-	player_files = os.listdir('world/players')
-	players = []
-	for x in player_files:
-		players.append(os.path.splitext(x)[0])
-	return players
+from util import get_players, filter_warnings
 
 def get_stamp(filter, input):
+	"""Returns a tuple of player, timestamp based on minecraft log timestamp"""
 	result = filter.match(input)
 	player = result.group(2)
 	timestamp = time.strptime(result.group(1), "%Y-%m-%d %H:%M:%S")
 	return (player, timestamp)
 
 def get_lists():
+	"""Returns 2 list of tuples (player, timestamp) of player logins and logouts"""
 	players = get_players()
 	player_regex = '|'.join(players)
 
@@ -43,6 +33,7 @@ def get_lists():
 	return logged_in, logged_out
 				
 def timediff(t1, t2):
+	"""Returnst the difference between two points in time"""
 	return abs(time.mktime(t1) - time.mktime(t2)) / 60
 
 def main():
