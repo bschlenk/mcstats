@@ -18,10 +18,10 @@ def timestamp2time(stamp):
 def get_players():
 	"""Return a list of players on the server, based on player.dat files."""
 	player_files = os.listdir(os.path.join(_server_dir, _player_dir))
-	players = []
+	players = set()
 	for player in player_files:
-		players.append(os.path.splitext(player)[0])
-	return players
+		players.add(os.path.splitext(player)[0])
+	return list(players)
 
 class MCLogFile():
 	_warn_strs = ['[WARNING]', '[SEVERE]']
@@ -53,7 +53,7 @@ class MCLogFile():
 			if pattern.match(line):
 				continue
 			else:
-				return line
+				yield line
 		
 
 	def no_warnings(self):

@@ -7,8 +7,8 @@ import re
 from util import get_players, MCLogFile, timestamp_re
 from util import timestamp2time
 
-login_strings = ['joined the game', r'.*?logged in with.*?$']
-logoff_strings = [r'.*?lost connection$', ]
+login_strings = [r'joined the game', r'.*logged in with.*$']
+logoff_strings = [r'.*lost connection.*$', r'left the game']
 
 def get_stamp(match_object):
 	"""Returns a tuple of player, timestamp based on minecraft log timestamp"""
@@ -27,6 +27,9 @@ def get_lists():
 	login_filter = re.compile(filter_base % '|'.join(login_strings))
 	logoff_filter = re.compile(filter_base % '|'.join(logoff_strings))
 
+	print login_filter.pattern
+	print logoff_filter.pattern
+
 
 	mclog = MCLogFile('server.log')
 	for line in mclog.info_no_convo():
@@ -39,7 +42,7 @@ def get_lists():
 		if result:
 			logged_out.append(get_stamp(result))
 			continue
-		print line,
+		print line
 	
 	return logged_in, logged_out
 				
@@ -69,9 +72,5 @@ def main():
 	print playtimes
 
 #main()
-#x, y = get_lists()
+x, y = get_lists()
 
-
-mclog = MCLogFile('server.log')
-for line in mclog.info():
-	print line
