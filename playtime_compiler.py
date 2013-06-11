@@ -23,7 +23,8 @@ def get_lists():
 
 	logged_in = []
 	logged_out = []
-	filter_base = r'({0}) \[INFO\] ({1}) (%s)'.format(timestamp_re, player_regex)
+	filter_base = r'(%s) \[INFO\] (%s)(?:\[.*?\]){,1}' % (timestamp_re, player_regex)
+	filter_base += r' (%s)'
 	login_filter = re.compile(filter_base % '|'.join(login_strings))
 	logoff_filter = re.compile(filter_base % '|'.join(logoff_strings))
 
@@ -33,7 +34,6 @@ def get_lists():
 
 	mclog = MCLogFile('server.log')
 	for line in mclog.info_no_convo():
-		print line
 		result = login_filter.match(line)
 		if result:
 			logged_in.append(get_stamp(result))
@@ -42,7 +42,6 @@ def get_lists():
 		if result:
 			logged_out.append(get_stamp(result))
 			continue
-		print line
 	
 	return logged_in, logged_out
 				
@@ -55,7 +54,6 @@ def main():
 	for x in get_players():
 		playtimes[x] = 0
 
-	remove_warnings()
 	logged_in, logged_out = get_lists()
 	for x in logged_in:
 		found = False
@@ -71,6 +69,5 @@ def main():
 
 	print playtimes
 
-#main()
-x, y = get_lists()
+main()
 
