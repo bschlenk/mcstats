@@ -31,14 +31,7 @@ class MCLogFile():
 		self._log_file = path
 		with open(self._log_file) as f:
 			self._contents = [line.strip() for line in f]
-		#self.no_warnings = []
-		#self.warnings = []
-		#for line in self._contents:
-			#if not '[WARNING]' in line:
-				#self._contents_no_warning.append(line)
-			#else:
-				#self.warnings.append(line)
-	
+
 	def __iter__(self):
 		return iter(self._contents)
 
@@ -54,7 +47,6 @@ class MCLogFile():
 				continue
 			else:
 				yield line
-		
 
 	def no_warnings(self):
 		for line in self._contents:
@@ -63,7 +55,7 @@ class MCLogFile():
 
 	def warnings(self):
 		for line in self._contents:
-			if '[WARNING]' in line:
+			if any(word in line for word in self._warn_strs):
 				yield line
 
 def remove_warnings():
