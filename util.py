@@ -27,10 +27,24 @@ class MCLogFile():
 	_warn_strs = ['[WARNING]', '[SEVERE]']
 	_contents = []
 
+	_login_filter = None
+	_logoff_filter = None
+	_shutdown_filter = None
+
 	def __init__(self, path=_log_file):
 		self._log_file = path
 		with open(self._log_file) as f:
-			self._contents = [line.strip() for line in f]
+			self._contents = [line.strip() for line in f if line]
+
+		login_strings = [r'joined the game', r'.*logged in with.*$']
+		logoff_strings = [r'.*lost connection.*$', r'left the game']
+
+		player_regex = '|'.join(get_players())
+		filter_base = r'(%s) \[INFO\] (%s)(?:\[.*?\]){,1}' % (timestamp_re, player_regex)
+		filter_base += r' (%s)'
+		self._login_filter = re.compile(filter_base % '|'.join(login_strings))
+		self._logoff_filter = re.compile(filter_base % '|'.join(logoff_strings))
+		self._shutdown_filter = re.compile(r'(%s) \[INFO\] Stopping the server' % timestamp_re)
 
 	def __iter__(self):
 		return iter(self._contents)
