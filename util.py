@@ -9,7 +9,7 @@ _player_dir = 'world/players'
 _log_file = os.path.join(_server_dir, 'server.log')
 
 # used for regex requiring timestamp parsing
-timestamp_re = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}"
+timestamp_re = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
 
 def timestamp2time(stamp):
 	"""Convert minecraft log timestamp to time object."""

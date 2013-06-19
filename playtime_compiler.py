@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import time
 import os
 import re
@@ -16,23 +17,23 @@ def get_stamp(match_object):
 	timestamp = timestamp2time(match_object.group(1))
 	return (player, timestamp)
 
-def get_lists():
-	"""Returns 2 list of tuples (player, timestamp) of player logins and logouts"""
+def get_lists(logfile='server.log'):
+	"""Return 2 lists of tuples (player, timestamp) of player logins and logouts,
+	and a third list of logout times.
+	"""
 	players = get_players()
 	player_regex = '|'.join(players)
 
 	logged_in = []
 	logged_out = []
+	shutdown = []
 	filter_base = r'(%s) \[INFO\] (%s)(?:\[.*?\]){,1}' % (timestamp_re, player_regex)
 	filter_base += r' (%s)'
 	login_filter = re.compile(filter_base % '|'.join(login_strings))
 	logoff_filter = re.compile(filter_base % '|'.join(logoff_strings))
+	shutdown_filter = re.compile(r'(%s) \[INFO\] Stopping the server' % timestamp_re)
 
-	print login_filter.pattern
-	print logoff_filter.pattern
-
-
-	mclog = MCLogFile('server.log')
+	mclog = MCLogFile(logfile)
 	for line in mclog.info_no_convo():
 		result = login_filter.match(line)
 		if result:
@@ -42,19 +43,26 @@ def get_lists():
 		if result:
 			logged_out.append(get_stamp(result))
 			continue
+		result = shutdown_filter.match(line)
+		if result:
+			shutdown.append(timestamp2time(result.group(1)))
 	
-	return logged_in, logged_out
+	return logged_in, logged_out, shutdown
 				
 def timediff(t1, t2):
-	"""Returnst the difference between two points in time"""
-	return abs(time.mktime(t1) - time.mktime(t2)) / 60
+	"""Return the difference between two points in time"""
+	return abs(time.mktime(t1) - time.mktime(t2)) / 60.
 
 def main():
+	logfile = None
+	if len(sys.argv) >= 2:
+		logfile = sys.argv[1]
+
 	playtimes = {}
 	for x in get_players():
 		playtimes[x] = 0
 
-	logged_in, logged_out = get_lists()
+	logged_in, logged_out, shutdown = get_lists(logfile)
 	for x in logged_in:
 		found = False
 		for y in logged_out:
@@ -70,4 +78,6 @@ def main():
 	print playtimes
 
 main()
+#get_lists()
+
 
