@@ -5,11 +5,7 @@ import sys
 import os
 
 def get_players():
-	player_files = os.listdir('world/players')
-	players = []
-	for x in player_files:
-		players.append(os.path.splitext(x)[0])
-	return players
+	return [os.path.splitext(x)[0] for x in os.listdir('world/players')]
 
 players = get_players()
 
@@ -18,9 +14,7 @@ with open('server.log', 'r') as f:
 	prog = re.compile(regmatch)
 	chatline = "{0} <{1}> {1} {2}"
 
-	player_deaths = {}
-	for player in players:
-		player_deaths[player] = 0
+	player_deaths = dict((p, 0) for p in players)
 
 	for line in f:
 		if not "disconnect" in line and not "lost connection" in line:
