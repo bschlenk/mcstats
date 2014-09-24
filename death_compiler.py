@@ -19,14 +19,12 @@ ignore_list = [
 ]
 
 def get_death_dict():
-	player_deaths = {}
 	death_strings = set()
 	with open('server.log', 'r') as f:
 		regmatch = "({0}) \[INFO\] ({1}) (?!.*{2}.*)(.*)".format(timestamp_re, '|'.join(players), '|'.join(ignore_list))
 		prog = re.compile(regmatch)
 
-		for player in players:
-			player_deaths[player] = 0
+		player_deaths = dict((p, 0) for p in players)
 
 		for line in f:
 			result = prog.match(line)
